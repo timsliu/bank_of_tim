@@ -19,7 +19,7 @@ class Client {
 public:
 
     // constructor - by default open account with no balance
-    Client(const string &name, float balance=0.0f);
+    Client(const string &name, float balance);
     // destructor - currently does nothing
     ~Client();
 
@@ -28,10 +28,10 @@ public:
     string get_name() const;         // return client name
 
     // additional functions and transactions supported
-    void deposit(float amount);      // add money to checking account
-    void withdraw(float amount);     // remove money from account
-    void transfer_from(float amount, Client source);   // transfer money from source to this
-    void pay_interest();             // pay interest into this account
+    void deposit(float amount);           // add money to checking account
+    void withdraw(float amount);          // remove money from account
+    void pay_interest(float interest);    // pay interest into this account
+    
 
 
 };

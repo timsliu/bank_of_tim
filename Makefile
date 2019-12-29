@@ -1,3 +1,6 @@
+# Revision History
+# 12/29/19    Tim Liu    added economy.o and dependencies
+
 # Compiler flags
 CXX = g++
 CXXFLAGS = -std=c++14 -Wall -Werror
@@ -15,7 +18,6 @@ bank.o: bank.cpp bank.h client.h
 economy.o: economy.cpp bank.h client.h
 
 # build rules
-
 economy: $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
