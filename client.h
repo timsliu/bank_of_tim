@@ -4,10 +4,12 @@
  *
  * Revision History
  * 12/28/19    Tim Liu    created file
+ * 12/29/19    Tim Liu    added include<string>
  *
  */
 
- using namespace std;
+#include<string>
+using namespace std;
 
 class Client {
     float checking_balance;         // balance of customers checking account
@@ -18,6 +20,8 @@ public:
 
     // constructor - by default open account with no balance
     Client(const string &name, float balance=0.0f);
+    // destructor - currently does nothing
+    ~Client();
 
     // accessor functions
     float get_balance() const;       // return current bank balance

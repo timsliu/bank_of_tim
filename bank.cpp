@@ -6,14 +6,13 @@
 
 
 #include <map>
-#include "client.h"
 #include "bank.h"
 
 using namespace std;
 
 
 // Bank constructor
-Bank::Bank() {
+Bank::Bank(float interest) {
     //TODO
 }
 

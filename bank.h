@@ -19,6 +19,8 @@ class Bank {
 public:
     // constructor - by default create a bank with 1.0% interest
     Bank(float interest=1.0f);
+    // destructor
+    ~Bank();
 
     // summary functions
     float get_total_balance();        // calculate total bank holdings
