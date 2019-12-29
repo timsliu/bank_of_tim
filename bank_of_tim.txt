@@ -1,0 +1,5 @@
+Bank of Tim
+
+Bank of Tim is a software project for practicing C++. The project implements
+basic functions of a bank (accounts, withrdrawls, deposits, paying interest, etc.)
+spread across multiple files.
