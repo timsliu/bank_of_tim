@@ -3,7 +3,7 @@
  * Revision History
  * 12/28/19    Tim Liu    copied function headers from bank.h
  * 12/29/19    Tim Liu    filled in basic summary and transaction functions
- * 12/29/19    Tim Liu    
+ * 12/30/19    Tim Liu    modified show_clients to print uniform spaces 
  */
 
 
@@ -17,9 +17,7 @@ using namespace std;
 /* Name: Bank()
  * 
  * Description:  constructor for bank class 
- * 
  * Arguments:    interest (float) - interest rate paid to checking accounts
- * Returns:      None
  */
 
 Bank::Bank(float interest) {
@@ -30,9 +28,6 @@ Bank::Bank(float interest) {
 /* Name: Bank()
  * 
  * Description:  destructor for bank class 
- * 
- * Arguments:    None    
- * Returns:      None
  */
 Bank::~Bank() {
     printf("Closing the bank!\n");
@@ -43,9 +38,7 @@ Bank::~Bank() {
  * 
  * Description:  calculates the total balance held by the bank
  *               in all client accounts
- *
- * Arguments:    None
- * Returns:      total balance (float)
+ * Return:       total balance (float)
  */
 
 float Bank::get_total_balance() {
@@ -64,8 +57,6 @@ float Bank::get_total_balance() {
  * 
  * Description:  calculates the mean balance held by the client bank
  *               accounts
- *
- * Arguments:    None
  * Returns:      mean balance (float)
  */
 float Bank::get_mean() {
@@ -78,10 +69,8 @@ float Bank::get_mean() {
  * 
  * Description:  adds a new client to the bank's client list. The client is
  *               rejected if the name already appears in the client list
- *
  * Arguments:    name - name of the new client
  *               balance - starting balance to place in client's account
- * Returns:      None
  */
 void Bank::new_client(const string &name, float balance) {
 
@@ -92,9 +81,10 @@ void Bank::new_client(const string &name, float balance) {
     if (itr == client_list.end()) {
         Client new_client = Client(name, balance);     // create new client
         client_list.insert({name, new_client});        // add client to client_list
+        return;
     }
 
-    printf("Client already has account - new account failed");
+    printf("Client already has account - new account failed\n");
 
 }
 
@@ -105,7 +95,6 @@ void Bank::new_client(const string &name, float balance) {
  *
  * Arguments:    name - name of the client
  *               amount - balance to add to client's account
- * Returns:      None
  */
 void Bank::bank_deposit(const string &client_name, float amount) {
 
@@ -192,7 +181,30 @@ void Bank::bank_pay_interest() {
  *               sequentially
  */
 void Bank::handle_transactions() {
-    // TODO
+
+    int num_trans = 0;
+
+    while (!trans_queue.empty()) {
+        // remove first element from the queue
+        transaction t = trans_queue.front();
+
+        switch (t.type) {
+            case 0: new_client(t.client_a, t.amount);
+                    break;
+            case 1: bank_deposit(t.client_a, t.amount);
+                    break;
+            case 2: bank_withdraw(t.client_a, t.amount);
+                    break;
+            case 3: bank_transfer(t.client_a, t.client_b, t.amount);
+                    break;
+            default: printf("Transaction type not recognized %d\n", t.type);
+                     break;
+        }
+
+        trans_queue.pop();      // remove handled element from the queue
+        num_trans++;
+    }
+    printf("%d transactions handled\n", num_trans);
 }
 
 /* Name: add_transaction()
@@ -201,6 +213,22 @@ void Bank::handle_transactions() {
  *
  * Arguments:    new_trans (transaction) - new transaction
  */
-void Bank::add_transaction(transaction new_trans) {
-    // TODO
+void Bank::add_transaction(const transaction &new_trans) {
+    trans_queue.push(new_trans);
 }
+
+/* Name: show_clients()
+ *
+ * Description: prints the names of all clients and the balances
+ *              in each account
+ */
+void Bank::show_clients() {
+    map<string, Client>::iterator itr;
+
+    for (itr = client_list.begin(); itr != client_list.end(); itr++) {
+        Client c = itr->second;
+        string name = c.get_name();
+        name.append(NAME_PAD - name.length(), ' ');    // pad name with spaces to uniform length
+        printf("Client: %s Balance: %5.2f\n", name.c_str(), c.get_balance());
+    }
+};

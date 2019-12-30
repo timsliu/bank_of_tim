@@ -3,10 +3,12 @@
  * Revision History
  * 12/29/19    Tim Liu    created skeleton main loop
  * 12/29/19    Tim Liu    added outline for main loop
+ * 12/29/19    Tim Liu    added make_transactions
+ * 12/30/19    Tim Liu    created mass_transactions for generating large
+ *                        numbers of random transactions
  *
  */
 
-#include<string>
 
 #include "economy.h"
 
@@ -14,15 +16,137 @@ using namespace std;
 
 
 int main() {
-    // create a bank
 
-    // read in transaction list
+    srand(RAND_SEED);            // initialize random number generator
+    
+    Bank BoT = Bank();           // initialize Bank of Tim to default interest
+    //make_transactions(BoT);      // create transactions for BoT
+    mass_transactions(BoT);      // create lots of transactions for BoT
+    BoT.handle_transactions();   // handle all transactions
+    BoT.show_clients();          // print all client info :O
 
-    // execute transactions
-
-    // print client information
     return 0;
 }
 
+/* Name: make_transactions
+ *
+ * Description: creates a set of bank transaction orders and adds them to
+ *              the passed Bank object
+ *
+ * Arguments:   active_bank (Bank) - reference to a bank where the transactions
+ *              should be added to
+ *
+ */
+void make_transactions(Bank &active_bank) {
+
+    // create a bunch of new transactions
+    transaction t1 = {0, 100.0f, "Ben Bernanke", "x"};
+    transaction t2 = {0, 100.0f, "Janet Yellen", "x"};
+    transaction t3 = {1, 50.0f, "Ben Bernanke", "x"};
+    transaction t4 = {2, 40.0f, "Janet Yellen", "x"};
+    transaction t5 = {3, 40.0f, "Janet Yellen", "Ben Bernanke"};
+
+    // add transactions to the active bank
+    active_bank.add_transaction(t1);
+    active_bank.add_transaction(t2);
+    active_bank.add_transaction(t3);
+    active_bank.add_transaction(t4);
+    active_bank.add_transaction(t5);
+}
 
 
+/* Name: mass_transactions
+ *
+ * Description: creates a large set of bank transaction orders and adds them to
+ *              the passed Bank object
+ *
+ * Arguments:   active_bank (Bank) - reference to a bank where the transactions
+ *              should be added to
+ *
+ */
+void mass_transactions(Bank &active_bank) {
+
+    int num_first = 0;    // number of first names
+    int num_last = 0;     // number of last names
+
+    printf("Entered mass_transactions\n");
+
+
+    // read in first and last names to string array
+    vector<string> first_names;
+    vector<string> last_names;
+
+
+    ifstream first_name_file{"first_names.txt"};         // open first name file
+    ifstream last_name_file{"last_names.txt"};           // open last name file
+
+    // check if one of the file openings failed
+    if (!first_name_file) {
+        printf("open failed!");
+        throw invalid_argument("Couldn't open file\n");
+    }
+
+    
+    // add all first names to first name vector
+    while (first_name_file) {
+        string new_first_name;
+        first_name_file >> new_first_name;
+        if (new_first_name == "") break;     // check if empty line read in
+
+        first_names.push_back(new_first_name);
+        num_first++;
+    }
+   
+    // add all last names to the last name vector
+    while (last_name_file) {
+        string new_last_name;
+        last_name_file >> new_last_name;
+        if (new_last_name == "") break;    // check if empty line read in
+        
+        last_names.push_back(new_last_name);
+        num_last++;
+    }
+
+    printf("First names: %d  Last names: %d\n", num_first, num_last);
+
+    //return;
+
+    // compact array of names that have been used
+    int* name_array = (int*) calloc(num_first * num_last, sizeof(int));
+    used_names compact_names = {0, name_array};    // struct for holding names compactly
+
+    // one hot vector to track used names
+    int* one_hot_names = (int*) calloc(num_first * num_last, sizeof(int));
+
+
+    // Step 1 - generate a bunch of unique accounts
+    for (int i = 0; i < ACCOUNT_BATCH; i++) {
+        int first = rand() % num_first;          // index of first name
+        int last  = rand() % num_last;           // index of last name
+
+        int name_id = first * num_last + last;
+
+        // check if name already taken
+        if (one_hot_names[name_id] == NAME_USED) continue;
+
+        one_hot_names[name_id] = NAME_USED;                            // mark name was used
+        compact_names.name_array[compact_names.num_names] = name_id;   // add to compact list
+        compact_names.num_names++;                                     // inc number of used names
+
+
+        // create name string
+        string new_name = first_names[first] + " " + last_names[last];
+
+        float start_balance = (rand() % 20) * 5;             // randomly generate start balance
+        transaction t = {0, start_balance, new_name, "x"};   // create transaction
+        active_bank.add_transaction(t);                      // add to the bank
+
+    }
+
+
+
+    // Stage 2 - generate a bunch of transactions
+
+    // allocate array for recording combos of first/last names
+
+}
