@@ -7,6 +7,7 @@
  * 12/30/19    Tim Liu    created mass_transactions for generating large
  *                        numbers of random transactions
  * 12/30/19    Tim Liu    added get_client
+ * 12/31/19    Tim Liu    freed dynamically allocated memory in mass_transaction
  *
  */
 
@@ -19,11 +20,12 @@ using namespace std;
 int main() {
 
     srand(RAND_SEED);            // initialize random number generator
-    
+
     Bank BoT = Bank();           // initialize Bank of Tim to default interest
     //make_transactions(BoT);      // create transactions for BoT
     mass_transactions(BoT);      // create lots of transactions for BoT
     BoT.handle_transactions();   // handle all transactions
+    BoT.bank_pay_interest();
     BoT.show_clients();          // print all client info :O
 
     return 0;
@@ -156,6 +158,10 @@ void mass_transactions(Bank &active_bank) {
         float amount = (rand() % 30) * 5;                              // randomly generate amount
         active_bank.add_transaction(trans_code, amount, c1, c2);       // add transaction to our bank
     }
+
+    // free the dynamically allocated memory
+    free(one_hot_names);
+    free(compact_names.name_array);
 }
 
 

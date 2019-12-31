@@ -7,29 +7,20 @@
  *
  */
 
+#ifndef BANK_H
+#define BANK_H
+
 #include <map>
 #include <queue>
+
 #include "client.h"
+#include "multiqueue.h"
+#include "bank_types.h"
+#include "omp.h"
 
 #define NAME_PAD 25
 
 using namespace std;
-
-// struct specifying a transaction the bank needs to execute
-
-// type transaction
-//   0  open new account
-//   1  deposit
-//   2  withdraw
-//   3  transfer
-//   4  pay interest to all accounts
-// 
-struct transaction {
-    int type;               // integer representing type of transaction
-    float amount;           // amount of money
-    string client_a;        // 1st client name
-    string client_b;        // 2nd client name
-};
 
 
 class Bank {
@@ -62,3 +53,5 @@ public:
     void add_transaction(int type, float amount, const string &client_a, const string &client_b); 
 
 };
+
+#endif /* BANK_H */

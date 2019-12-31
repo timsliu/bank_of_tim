@@ -12,6 +12,8 @@
 #include <map>
 #include <stdio.h>
 #include "bank.h"
+#include "multiqueue.h"
+#include "CycleTimer.h"
 
 using namespace std;
 
@@ -171,9 +173,15 @@ void Bank::bank_pay_interest() {
 
     map<string, Client>::iterator itr;
     
+
+    double start_time = CycleTimer::currentSeconds();
+
     for (itr = client_list.begin(); itr != client_list.end(); itr++) {
+        printf("Paying interest!\n");
         itr->second.pay_interest(interest);
     }
+    double end_time = CycleTimer::currentSeconds();
+    printf("Interest payment time: %f ms\n", (end_time - start_time) * 1000);
 
 }
 
@@ -223,6 +231,8 @@ void Bank::add_transaction(int type, float amount, const string &client_a, const
     
     // assemble arguments into a struct and push to the transaction queue
     transaction new_trans = {type, amount, client_a, client_b};
+
+    // TODO - change to a multiqueue
     trans_queue.push(new_trans);
 }
 
