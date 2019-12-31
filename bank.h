@@ -26,7 +26,8 @@ using namespace std;
 class Bank {
 
     map<string, Client> client_list;       // list of clients - super duper private!!
-    queue<transaction> trans_queue;        // queue of pending transactions for bank to handle
+    //queue<transaction> trans_queue;        // queue of pending transactions for bank to handle
+    mQueue trans_queue;                    // use multiqueue for transactions
     float interest;                        // bank interest rate as a percent
 
 public:
