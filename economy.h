@@ -19,7 +19,8 @@
 #define NUM_TRANS 100      // number of transactions to generate
 #define NAME_USED 88       // marker indicating a name is used
 
-#define ACCOUNT_BATCH 256   // number of attempts at making accounts
+#define ACCOUNT_BATCH 256       // number of attempts at making accounts
+#define TRANSACTION_BATCH 1024  // number of transactions to issue
 
 #define RAND_SEED 7        // seed for random number generator
 
@@ -30,3 +31,5 @@ struct used_names {
 int main();
 void make_transactions(Bank &active_bank);
 void mass_transactions(Bank &active_bank);
+void get_client(const used_names &compact_names, string &client_name,
+                vector<string> &first_names, vector<string> &last_names);

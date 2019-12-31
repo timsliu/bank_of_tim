@@ -4,6 +4,8 @@
  * 12/28/19    Tim Liu    copied function headers from bank.h
  * 12/29/19    Tim Liu    filled in basic summary and transaction functions
  * 12/30/19    Tim Liu    modified show_clients to print uniform spaces 
+ * 12/30/19    Tim Liu    changed add_transaction to accept four arguments instead
+ *                        of requiring callee to package into struct
  */
 
 
@@ -84,7 +86,7 @@ void Bank::new_client(const string &name, float balance) {
         return;
     }
 
-    printf("Client already has account - new account failed\n");
+    printf("Client %s already has account - new account failed\n", name.c_str());
 
 }
 
@@ -211,9 +213,16 @@ void Bank::handle_transactions() {
  * 
  * Description:  adds a single transaction to the transaction queue
  *
- * Arguments:    new_trans (transaction) - new transaction
+ * Arguments:    type (int) - type of transaction to perform
+ *               amount (float)  - value to transfer
+ *               client_a - name of first client
+ *               client_b - name of second client; not all transactions require
+ *                          two clients but this field will always be filled
  */
-void Bank::add_transaction(const transaction &new_trans) {
+void Bank::add_transaction(int type, float amount, const string &client_a, const string &client_b) {
+    
+    // assemble arguments into a struct and push to the transaction queue
+    transaction new_trans = {type, amount, client_a, client_b};
     trans_queue.push(new_trans);
 }
 

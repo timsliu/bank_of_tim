@@ -59,6 +59,6 @@ public:
 
     // functions for handling transactions
     void handle_transactions();                           // performs transactions in trans_queue
-    void add_transaction(const transaction &new_trans);    // add a transaction to the trans_queue
+    void add_transaction(int type, float amount, const string &client_a, const string &client_b); 
 
 };

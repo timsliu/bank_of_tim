@@ -6,6 +6,7 @@
  * 12/29/19    Tim Liu    added make_transactions
  * 12/30/19    Tim Liu    created mass_transactions for generating large
  *                        numbers of random transactions
+ * 12/30/19    Tim Liu    added get_client
  *
  */
 
@@ -40,18 +41,12 @@ int main() {
 void make_transactions(Bank &active_bank) {
 
     // create a bunch of new transactions
-    transaction t1 = {0, 100.0f, "Ben Bernanke", "x"};
-    transaction t2 = {0, 100.0f, "Janet Yellen", "x"};
-    transaction t3 = {1, 50.0f, "Ben Bernanke", "x"};
-    transaction t4 = {2, 40.0f, "Janet Yellen", "x"};
-    transaction t5 = {3, 40.0f, "Janet Yellen", "Ben Bernanke"};
+    active_bank.add_transaction(0, 100.0f, "Ben Bernanke", "x");
+    active_bank.add_transaction(0, 100.0f, "Janet Yellen", "x");
+    active_bank.add_transaction(1, 50.0f, "Ben Bernanke", "x");
+    active_bank.add_transaction(2, 40.0f, "Janet Yellen", "x");
+    active_bank.add_transaction(3, 40.0f, "Janet Yellen", "Ben Bernanke");
 
-    // add transactions to the active bank
-    active_bank.add_transaction(t1);
-    active_bank.add_transaction(t2);
-    active_bank.add_transaction(t3);
-    active_bank.add_transaction(t4);
-    active_bank.add_transaction(t5);
 }
 
 
@@ -137,16 +132,55 @@ void mass_transactions(Bank &active_bank) {
         // create name string
         string new_name = first_names[first] + " " + last_names[last];
 
-        float start_balance = (rand() % 20) * 5;             // randomly generate start balance
-        transaction t = {0, start_balance, new_name, "x"};   // create transaction
-        active_bank.add_transaction(t);                      // add to the bank
+        float start_balance = (rand() % 20) * 5;                        // randomly generate start balance
+        active_bank.add_transaction(0, start_balance, new_name, "x");   // add to the bank
 
     }
 
-
-
     // Stage 2 - generate a bunch of transactions
+    for (int i = 0; i < TRANSACTION_BATCH; i++) {       
+        int trans_code = rand() % 3 + 1;             // choose a transaction to execute; no new clients
 
-    // allocate array for recording combos of first/last names
+        string c1;                                   // name of first client
+        string c2;                                   // name of second client
+
+        if (trans_code == 3) {
+            get_client(compact_names, c1, first_names, last_names);    // transfer transaction - get two clients
+            get_client(compact_names, c2, first_names, last_names);
+        }
+        else {
+            get_client(compact_names, c1, first_names, last_names);    // other transaction - one client
+            c2 = "x";                                                  // fill other client with blank
+        }
+
+        float amount = (rand() % 30) * 5;                              // randomly generate amount
+        active_bank.add_transaction(trans_code, amount, c1, c2);       // add transaction to our bank
+    }
+}
+
+
+
+/* Name: get_client
+ *
+ * Description: randomly generates the name of a client who already has
+ *              an open account
+ *
+ * Arguments:   compact_names (used_names) - struct holding names that have been used
+ *              client_name (string) - string to fill in with name of client
+ *              first_names (vector) - vector of all used first names
+ *              last_names (vector) - vector of all used last names
+ *
+ */
+void get_client(const used_names &compact_names, string &client_name,
+                vector<string> &first_names, vector<string> &last_names){
+
+    int name_index = rand() % compact_names.num_names;   // choose random client name
+    int name_id = compact_names.name_array[name_index];  // look up name id
+    int num_last = last_names.size();                    // get number of last names
+
+    int first = name_id/num_last;            // recover first and last name index
+    int last  = name_id % num_last;
+
+    client_name = first_names[first] + " " + last_names[last]; // fill passed string
 
 }

@@ -1,5 +1,6 @@
 # Revision History
 # 12/29/19    Tim Liu    added economy.o and dependencies
+# 12/30/19    Tim Liu    fixed bug where economy.o was missing economy.h dependency
 
 # Compiler flags
 CXX = g++
@@ -15,7 +16,7 @@ client.o: client.cpp client.h
 
 bank.o: bank.cpp bank.h client.h
 
-economy.o: economy.cpp bank.h client.h
+economy.o: economy.cpp bank.h client.h economy.h
 
 # build rules
 economy: $(OBJS)
