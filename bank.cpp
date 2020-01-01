@@ -6,6 +6,11 @@
  * 12/30/19    Tim Liu    modified show_clients to print uniform spaces 
  * 12/30/19    Tim Liu    changed add_transaction to accept four arguments instead
  *                        of requiring callee to package into struct
+ * 12/31/19    Tim Liu    changed to a multiqueue for holding transactions
+ * 12/31/19    Tim Liu    changed transaction struct initialization from on the stack
+ *                        to using new
+ * TODO
+ * fix memory leak - need to free transaction structs
  */
 
 
@@ -27,6 +32,13 @@ using namespace std;
 Bank::Bank(float interest) {
     // set bank interest rate
     this->interest = interest;
+
+    // initialize the transaction queue
+    trans_queue.inserts = 0;
+    trans_queue.chunk_size = SUBQ_SIZE;
+    trans_queue.tail = NULL;
+    trans_queue.qlock = &bank_lock;
+    
 }
 
 /* Name: Bank()
@@ -131,6 +143,7 @@ void Bank::bank_withdraw(const string &client_name, float amount) {
         return;
     }
 
+
     client_itr->second.withdraw(amount);      // client found - deposit the amount
     return;
 }
@@ -177,7 +190,6 @@ void Bank::bank_pay_interest() {
     double start_time = CycleTimer::currentSeconds();
 
     for (itr = client_list.begin(); itr != client_list.end(); itr++) {
-        printf("Paying interest!\n");
         itr->second.pay_interest(interest);
     }
     double end_time = CycleTimer::currentSeconds();
@@ -186,33 +198,42 @@ void Bank::bank_pay_interest() {
 }
 
 /* Name: handle_transactions()
- * 
- * Description:  removes all transactions from trans_queue and handles them
- *               sequentially
+ *
+ * Description: Spawns a pool of threads to handle transactions. Each thread
+ *              grabs a list of transactions from the multiqueue and handles the
+ *              transactions.
  */
 void Bank::handle_transactions() {
 
     int num_trans = 0;
 
-    while (!trans_queue.empty()) {
-        // remove first element from the queue
-        transaction t = trans_queue.front();
-
-        switch (t.type) {
-            case 0: new_client(t.client_a, t.amount);
-                    break;
-            case 1: bank_deposit(t.client_a, t.amount);
-                    break;
-            case 2: bank_withdraw(t.client_a, t.amount);
-                    break;
-            case 3: bank_transfer(t.client_a, t.client_b, t.amount);
-                    break;
-            default: printf("Transaction type not recognized %d\n", t.type);
-                     break;
+    while (1) {
+        Node* sublist = mQueue_pop(&trans_queue);    // grab sublist off transaction queue
+        if (sublist == NULL) {                       // check if the sublist is empty
+            break;
         }
 
-        trans_queue.pop();      // remove handled element from the queue
-        num_trans++;
+        while (sublist != NULL){
+            transaction* t = sublist->trans;
+
+            switch (t->type) {
+                case 0: new_client(t->client_a, t->amount);
+                        break;
+                case 1: bank_deposit(t->client_a, t->amount);
+                        break;
+                case 2: bank_withdraw(t->client_a, t->amount);
+                        break;
+                case 3: bank_transfer(t->client_a, t->client_b, t->amount);
+                        break;
+                default: printf("Transaction type not recognized %d\n", t->type);
+                         break;
+            }
+
+            Node* old = sublist;           // make copy of the node pointer
+            sublist = sublist->next;       // advance to the next node
+            delete old;                    // clean out the node
+            num_trans++;
+        }
     }
     printf("%d transactions handled\n", num_trans);
 }
@@ -230,10 +251,17 @@ void Bank::handle_transactions() {
 void Bank::add_transaction(int type, float amount, const string &client_a, const string &client_b) {
     
     // assemble arguments into a struct and push to the transaction queue
-    transaction new_trans = {type, amount, client_a, client_b};
+
+
+    transaction* new_trans = new transaction;
+    
+    new_trans->type = type;
+    new_trans->amount = amount;
+    new_trans->client_a = client_a;
+    new_trans->client_b = client_b;
 
     // TODO - change to a multiqueue
-    trans_queue.push(new_trans);
+    mQueue_push(&trans_queue, new_trans);
 }
 
 /* Name: show_clients()

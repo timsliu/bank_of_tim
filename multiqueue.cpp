@@ -34,7 +34,6 @@ void mQueue_push(mQueue* m, transaction* t){
     n->trans = t;                 // set the values
     n->next = NULL;
 
-
     // node is not the first element of a sub-Q
     if (m->inserts != 0) {
         m->tail->next = n;       // point old tail to n
@@ -60,7 +59,7 @@ void mQueue_push(mQueue* m, transaction* t){
  */
 
 Node* mQueue_pop(mQueue* m) {
-    m->qlock.lock();           // take lock on the heads queue
+    m->qlock->lock();           // take lock on the heads queue
 
     if (m->heads.empty()) {     // queue is empty - return NULL
         return NULL;
@@ -71,6 +70,6 @@ Node* mQueue_pop(mQueue* m) {
 
     // TODO - to support simultaneous operations, set insert to 0
 
-    m->qlock.unlock();
+    m->qlock->unlock();
     return head;
 }

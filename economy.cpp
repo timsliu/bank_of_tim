@@ -21,7 +21,7 @@ int main() {
 
     srand(RAND_SEED);            // initialize random number generator
 
-    Bank BoT = Bank();           // initialize Bank of Tim to default interest
+    Bank BoT(1.0);           // initialize Bank of Tim to default interest
     //make_transactions(BoT);      // create transactions for BoT
     mass_transactions(BoT);      // create lots of transactions for BoT
     BoT.handle_transactions();   // handle all transactions

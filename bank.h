@@ -4,6 +4,9 @@
  * Revision History
  * 12/28/19    Tim Liu    created file
  * 12/29/19    Tim Liu    added transaction struct
+ * 12/31/19    Tim Liu    removed transaction struct - moved to bank_types.h
+ *                       to avoid circular dependency
+ * 12/31/19    Tim Liu    added mutex bank_lock as private member 
  *
  */
 
@@ -12,6 +15,7 @@
 
 #include <map>
 #include <queue>
+#include <mutex>
 
 #include "client.h"
 #include "multiqueue.h"
@@ -29,6 +33,7 @@ class Bank {
     //queue<transaction> trans_queue;        // queue of pending transactions for bank to handle
     mQueue trans_queue;                    // use multiqueue for transactions
     float interest;                        // bank interest rate as a percent
+    mutex bank_lock;                       // lock for the transaction queue
 
 public:
     // constructor - by default create a bank with 1.0% interest
