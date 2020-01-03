@@ -8,6 +8,10 @@
  *                        transactions.h
  */
 
+
+#define NUM_ACCTS 256       // number of attempts at making accounts
+#define NUM_TRANS 1024  // number of transactions to issue
+
 #include <queue>
 #include <string>
 
