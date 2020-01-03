@@ -24,7 +24,7 @@ int main() {
     srand(RAND_SEED);                           // initialize random number generator
 
     Bank BoT(1.0);                              // initialize Bank of Tim to default interest
-    Transactions Seattle()                      // create a transactions generator for the Seattle area
+    Transactions Seattle("seattle");            // create a transactions generator for the Seattle area
     Seattle.add_accounts(BoT, NUM_ACCTS);       // add lots of accounts
     Seattle.add_transactions(BoT, NUM_TRANS);   // create lots of transactions for BoT
     

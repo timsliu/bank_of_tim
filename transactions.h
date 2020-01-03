@@ -42,15 +42,17 @@ private:
     used_names compact_names;   // struct holding name_array and number used
     int* one_hot_names;         // one hot vector tracking which names have been used
 
+    string city_name;
+
 
 public:
     
-    void Transactions();
-    void ~Transactions();
-    add_accounts(Bank &active_bank, int num_accounts);
-    add_transactions(Bank &active_bank, int num_transactions);
+    Transactions(string city_name);
+    ~Transactions();
+    void add_accounts(Bank &active_bank, int num_accounts);
+    void add_transactions(Bank &active_bank, int num_transactions);
     void small_transactions(Bank &active_bank);
     void get_client(string &client_name);
-}
+};
 
 #endif /* TRANSACTIONS_H */

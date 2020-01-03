@@ -10,7 +10,8 @@
 
 
 #define NUM_ACCTS 256       // number of attempts at making accounts
-#define NUM_TRANS 1024  // number of transactions to issue
+#define NUM_TRANS 1024      // number of transactions to issue
+#define RAND_SEED 7         // seed for random number generator
 
 #include <queue>
 #include <string>

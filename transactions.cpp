@@ -22,7 +22,10 @@
  *              holding which names have been used.
  *
  */
-void Transactions::Transactions() {
+
+Transactions::Transactions(string city_name) {
+
+    this->city_name = city_name;
 
     // parse the name files
     num_first = add_names(first_names, "first_names.txt", "first");
@@ -44,7 +47,7 @@ void Transactions::Transactions() {
  *              dynamically allocated for name_array and one_hot_names
  *
  */
-void Transactions::~Transactions() {
+Transactions::~Transactions() {
     free(name_array);
     free(one_hot_names);
 }
