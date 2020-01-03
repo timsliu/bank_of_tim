@@ -9,16 +9,18 @@ CXXFLAGS = -std=c++14 -Wall -Werror -Xpreprocessor -fopenmp
 all: economy
 
 # variables
-OBJS = client.o bank.o economy.o multiqueue.o
+OBJS = client.o bank.o economy.o multiqueue.o transactions.o
 
 # dependencies
 client.o: client.cpp client.h
 
 bank.o: bank.cpp bank.h client.h
 
-economy.o: economy.cpp bank.h client.h economy.h
+economy.o: economy.cpp bank.h client.h economy.h transactions.h
 
 multiqueue.o: multiqueue.cpp multiqueue.h
+
+transactions.o: transactions.cpp transactions.h bank.h
 
 # build rules
 economy: $(OBJS)

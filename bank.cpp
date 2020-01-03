@@ -9,7 +9,7 @@
  * 12/31/19    Tim Liu    changed to a multiqueue for holding transactions
  * 12/31/19    Tim Liu    changed transaction struct initialization from on the stack
  *                        to using new
- * 01/02/19    Tim Liu    deleted transaction struct after transaction is handled
+ * 01/02/20    Tim Liu    deleted transaction struct after transaction is handled
  * TODO
  */
 
@@ -208,7 +208,7 @@ void Bank::handle_transactions() {
     int num_trans = 0;
 
     // TODO - this section will be done in parallel
-    #pragma omp parallel
+    // #pragma omp parallel
     {
         while (1) {
  
