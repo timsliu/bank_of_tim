@@ -134,7 +134,7 @@ void mass_transactions(Bank &active_bank) {
         // create name string
         string new_name = first_names[first] + " " + last_names[last];
 
-        float start_balance = (rand() % 20) * 5;                        // randomly generate start balance
+        int start_balance = (rand() % 20) * 5;                        // randomly generate start balance
         active_bank.add_transaction(0, start_balance, new_name, "x");   // add to the bank
 
     }
@@ -155,7 +155,7 @@ void mass_transactions(Bank &active_bank) {
             c2 = "x";                                                  // fill other client with blank
         }
 
-        float amount = (rand() % 30) * 5;                              // randomly generate amount
+        int amount = (rand() % 30) * 5;                              // randomly generate amount
         active_bank.add_transaction(trans_code, amount, c1, c2);       // add transaction to our bank
     }
 

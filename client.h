@@ -15,25 +15,25 @@
 using namespace std;
 
 class Client {
-    float checking_balance;         // balance of customers checking account
+    int checking_balance;         // balance of customers checking account
     string client_name;             // customer name
 
 
 public:
 
     // constructor - by default open account with no balance
-    Client(const string &name, float balance);
+    Client(const string &name, int balance);
     // destructor - currently does nothing
     ~Client();
 
     // accessor functions
-    float get_balance() const;       // return current bank balance
+    int get_balance() const;       // return current bank balance
     string get_name() const;         // return client name
 
     // additional functions and transactions supported
-    void deposit(float amount);           // add money to checking account
-    void withdraw(float amount);          // remove money from account
-    void pay_interest(float interest);    // pay interest into this account
+    void deposit(int amount);           // add money to checking account
+    void withdraw(int amount);          // remove money from account
+    void pay_interest(int interest);    // pay interest into this account
     
 
 

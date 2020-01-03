@@ -9,8 +9,8 @@
  * 12/31/19    Tim Liu    changed to a multiqueue for holding transactions
  * 12/31/19    Tim Liu    changed transaction struct initialization from on the stack
  *                        to using new
+ * 01/02/19    Tim Liu    deleted transaction struct after transaction is handled
  * TODO
- * fix memory leak - need to free transaction structs
  */
 
 
@@ -26,10 +26,10 @@ using namespace std;
 /* Name: Bank()
  * 
  * Description:  constructor for bank class 
- * Arguments:    interest (float) - interest rate paid to checking accounts
+ * Arguments:    interest (int) - interest rate paid to checking accounts
  */
 
-Bank::Bank(float interest) {
+Bank::Bank(int interest) {
     // set bank interest rate
     this->interest = interest;
 
@@ -54,11 +54,11 @@ Bank::~Bank() {
  * 
  * Description:  calculates the total balance held by the bank
  *               in all client accounts
- * Return:       total balance (float)
+ * Return:       total balance (int)
  */
 
-float Bank::get_total_balance() {
-    float sum = 0.0f;          // total bank balances 
+int Bank::get_total_balance() {
+    int sum = 0;          // total bank balances 
 
     map<string, Client>::iterator itr;
 
@@ -73,10 +73,10 @@ float Bank::get_total_balance() {
  * 
  * Description:  calculates the mean balance held by the client bank
  *               accounts
- * Returns:      mean balance (float)
+ * Returns:      mean balance (int)
  */
-float Bank::get_mean() {
-    float sum = get_total_balance();       // find total balance
+int Bank::get_mean() {
+    int sum = get_total_balance();       // find total balance
     return sum/client_list.size();         // divide by the number of clients
 }
 
@@ -88,7 +88,7 @@ float Bank::get_mean() {
  * Arguments:    name - name of the new client
  *               balance - starting balance to place in client's account
  */
-void Bank::new_client(const string &name, float balance) {
+void Bank::new_client(const string &name, int balance) {
 
     // try to find the name in the current client list
     map<string, Client>::iterator itr = client_list.find(name);
@@ -112,7 +112,7 @@ void Bank::new_client(const string &name, float balance) {
  * Arguments:    name - name of the client
  *               amount - balance to add to client's account
  */
-void Bank::bank_deposit(const string &client_name, float amount) {
+void Bank::bank_deposit(const string &client_name, int amount) {
 
     map<string, Client>::iterator client_itr = client_list.find(client_name);
 
@@ -134,7 +134,7 @@ void Bank::bank_deposit(const string &client_name, float amount) {
  *               amount - balance to subtract from the client's account
  * Returns:      None
  */
-void Bank::bank_withdraw(const string &client_name, float amount) {
+void Bank::bank_withdraw(const string &client_name, int amount) {
 
     map<string, Client>::iterator client_itr = client_list.find(client_name);
 
@@ -160,7 +160,7 @@ void Bank::bank_withdraw(const string &client_name, float amount) {
  */
 
 
-void Bank::bank_transfer(const string &from_client, const string &to_client, float amount) {
+void Bank::bank_transfer(const string &from_client, const string &to_client, int amount) {
     map<string, Client>::iterator from_client_itr = client_list.find(from_client);
     map<string, Client>::iterator to_client_itr = client_list.find(to_client);
 
@@ -207,7 +207,9 @@ void Bank::handle_transactions() {
 
     int num_trans = 0;
 
+    // TODO - this section will be done in parallel
     while (1) {
+
         Node* sublist = mQueue_pop(&trans_queue);    // grab sublist off transaction queue
         if (sublist == NULL) {                       // check if the sublist is empty
             break;
@@ -231,7 +233,9 @@ void Bank::handle_transactions() {
 
             Node* old = sublist;           // make copy of the node pointer
             sublist = sublist->next;       // advance to the next node
+            delete old->trans;             // delete transaction struct in the node
             delete old;                    // clean out the node
+
             num_trans++;
         }
     }
@@ -243,12 +247,12 @@ void Bank::handle_transactions() {
  * Description:  adds a single transaction to the transaction queue
  *
  * Arguments:    type (int) - type of transaction to perform
- *               amount (float)  - value to transfer
+ *               amount (int)  - value to transfer
  *               client_a - name of first client
  *               client_b - name of second client; not all transactions require
  *                          two clients but this field will always be filled
  */
-void Bank::add_transaction(int type, float amount, const string &client_a, const string &client_b) {
+void Bank::add_transaction(int type, int amount, const string &client_a, const string &client_b) {
     
     // assemble arguments into a struct and push to the transaction queue
 
@@ -260,8 +264,7 @@ void Bank::add_transaction(int type, float amount, const string &client_a, const
     new_trans->client_a = client_a;
     new_trans->client_b = client_b;
 
-    // TODO - change to a multiqueue
-    mQueue_push(&trans_queue, new_trans);
+    mQueue_push(&trans_queue, new_trans);     // add to multiqueue data structure
 }
 
 /* Name: show_clients()
@@ -276,6 +279,6 @@ void Bank::show_clients() {
         Client c = itr->second;
         string name = c.get_name();
         name.append(NAME_PAD - name.length(), ' ');    // pad name with spaces to uniform length
-        printf("Client: %s Balance: %5.2f\n", name.c_str(), c.get_balance());
+        printf("Client: %s Balance: %d\n", name.c_str(), c.get_balance());
     }
 };

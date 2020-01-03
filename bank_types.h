@@ -4,6 +4,7 @@
  *
  * Revision History
  * 12/31/19    Tim Liu    split from bank.h to avoid circular dependency
+ * 01/02/20    Tim Liu    changed amount to int from float
  *
  *
  */
@@ -25,7 +26,7 @@ using namespace std;
 // 
 struct transaction {
     int type;               // integer representing type of transaction
-    float amount;           // amount of money
+    int amount;             // amount of money
     string client_a;        // 1st client name
     string client_b;        // 2nd client name
 };
