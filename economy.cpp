@@ -25,7 +25,7 @@ int main() {
     //make_transactions(BoT);      // create transactions for BoT
     mass_transactions(BoT);      // create lots of transactions for BoT
     BoT.handle_transactions();   // handle all transactions
-    BoT.bank_pay_interest();
+    // BoT.bank_pay_interest();  // no interest!!
     BoT.show_clients();          // print all client info :O
 
     return 0;
