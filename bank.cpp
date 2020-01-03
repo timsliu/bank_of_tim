@@ -208,35 +208,40 @@ void Bank::handle_transactions() {
     int num_trans = 0;
 
     // TODO - this section will be done in parallel
-    while (1) {
-
-        Node* sublist = mQueue_pop(&trans_queue);    // grab sublist off transaction queue
-        if (sublist == NULL) {                       // check if the sublist is empty
-            break;
-        }
-
-        while (sublist != NULL){
-            transaction* t = sublist->trans;
-
-            switch (t->type) {
-                case 0: new_client(t->client_a, t->amount);
-                        break;
-                case 1: bank_deposit(t->client_a, t->amount);
-                        break;
-                case 2: bank_withdraw(t->client_a, t->amount);
-                        break;
-                case 3: bank_transfer(t->client_a, t->client_b, t->amount);
-                        break;
-                default: printf("Transaction type not recognized %d\n", t->type);
-                         break;
+    #pragma omp parallel
+    {
+        while (1) {
+ 
+            Node* sublist = mQueue_pop(&trans_queue);    // grab sublist off transaction queue
+            if (sublist == NULL) {                       // check if the sublist is empty
+                break;
             }
-
-            Node* old = sublist;           // make copy of the node pointer
-            sublist = sublist->next;       // advance to the next node
-            delete old->trans;             // delete transaction struct in the node
-            delete old;                    // clean out the node
-
-            num_trans++;
+            printf("Sublist pulled\n");
+ 
+            while (sublist != NULL){
+                transaction* t = sublist->trans;
+                printf("Transaction type: %d\n", t->type);
+ 
+                switch (t->type) {
+                    case 0: new_client(t->client_a, t->amount);
+                            break;
+                    case 1: bank_deposit(t->client_a, t->amount);
+                            break;
+                    case 2: bank_withdraw(t->client_a, t->amount);
+                            break;
+                    case 3: bank_transfer(t->client_a, t->client_b, t->amount);
+                            break;
+                    default: printf("Transaction type not recognized %d\n", t->type);
+                             break;
+                }
+ 
+                Node* old = sublist;           // make copy of the node pointer
+                sublist = sublist->next;       // advance to the next node
+                delete old->trans;             // delete transaction struct in the node
+                delete old;                    // clean out the node
+ 
+                // num_trans++;  // NOT thread safe
+            }
         }
     }
     printf("%d transactions handled\n", num_trans);

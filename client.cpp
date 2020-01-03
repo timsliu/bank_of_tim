@@ -4,10 +4,9 @@
  * 12/29/19    Tim Liu    copied function prototypes from header file
  * 12/29/19    Tim Liu    filled in basic functions for deposit, withdraw,
  *                        constructor, and accessors  
- * 01/02/20    Tim Liu    modified depoist method to be thread safe
+ * 01/02/20    Tim Liu    modified deposit and withdraw methods to be use
+ *                        compare and swap to be thread safe
  *
- * TODO - change balance to be an integer instead of a float in order to
- *        use synchronization primitives
  */
 
 
@@ -53,7 +52,18 @@ void Client::deposit(int amount){
   
 // Withrdraw money from the client's account
 void Client::withdraw(int amount){
-    checking_balance -= amount;     //subtract set amount
+    while (1) {
+        int old_balance = checking_balance;      // record old balance
+        int new_balance = old_balance - amount ; // calculate new balance
+
+        // atomically swap in new value
+        bool success = __sync_bool_compare_and_swap(&checking_balance, 
+                                                    old_balance, 
+                                                    new_balance);
+        if (success){
+            break;
+        }
+    }
 }
 
 
