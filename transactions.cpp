@@ -5,6 +5,7 @@
  * Revision History
  * 01/03/20    Tim Liu    copied functions for generating transactions
  *                        from economy.cpp
+ * 01/04/20    Tim Liu    fixed duplicate names name_file
  *
  */
 
@@ -69,18 +70,19 @@ int Transactions::add_names(vector<string> &names, const string &name_file, cons
     int num_names = 0;    // number of first names
 
     printf("Adding %s names...\n", name_type.c_str());
+    printf("File name: %s\n", name_file.c_str());
 
-    ifstream name_file{name_file};         // open name file
+    ifstream names_txt{name_file};         // open name file
 
     // check if the file opening failed
-    if (name_file) {
+    if (!names_txt) {
         throw invalid_argument("Couldn't open file\n");
     }
 
     // add all names to the passed name vector
-    while (name_file) {
+    while (names_txt) {
         string new_name;
-        name_file >> new_name;
+        names_txt >> new_name;
         if (new_name == "") break;     // check if empty line read in
 
         names.push_back(new_name);
@@ -161,11 +163,11 @@ void Transactions::add_transactions(Bank &active_bank, int num_transactions) {
         string c2;                                   // name of second client
 
         if (trans_code == 3) {
-            get_client(compact_names, c1, first_names, last_names);    // transfer transaction - get two clients
-            get_client(compact_names, c2, first_names, last_names);
+            get_client(c1);    // transfer transaction - get two clients
+            get_client(c2);
         }
         else {
-            get_client(compact_names, c1, first_names, last_names);    // other transaction - one client
+            get_client(c1);    // other transaction - one client
             c2 = "x";                                                  // fill other client with blank
         }
 
@@ -184,7 +186,7 @@ void Transactions::add_transactions(Bank &active_bank, int num_transactions) {
  * Arguments:   client_name (string) - string to fill in with name of client
  *
  */
-void get_client(string &client_name) {
+void Transactions::get_client(string &client_name) {
 
     int name_index = rand() % compact_names.num_names;   // choose random client name
     int name_id = compact_names.name_array[name_index];  // look up name id
